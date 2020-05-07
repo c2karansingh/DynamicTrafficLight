@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Traffic Light</title>
+        <style>
+          body {
+              background-color: skyblue;
+          }
+
+          .trafficlight{
+              width: 100px;
+              height: 300px;
+              background-color: #434343;
+              margin: 10px auto 0px auto;
+              padding: 10px;
+              border-radius: 15px;
+          }
+
+          .timer{
+              position: absolute;
+              width: 60px;
+              height: 100px;
+              background-color: #484848;
+              z-index: 2;
+              margin: 0px auto 0px auto;
+              left: 25px;
+              top: 42px;
+              padding: 10px;
+              border-radius: 15px;
+          }
+
+          .timer .num{
+              margin-top: 26px;
+              text-align: center;
+              bottom: 10px;
+              font-size:45px;
+              font-weight: bold;
+              background-color: #555555;
+              border-radius: 20px;
+          }
+
+          .timer-holder-top{
+              position: absolute;
+              z-index: -1;
+              width: 50px;
+              height: 20px;
+              background-color: #303030;
+              top: 60px;
+              left: 85px;
+          }
+
+          .timer-holder-bottom{
+              position: absolute;
+              z-index: -1;
+              width: 50px;
+              height: 20px;
+              background-color: #303030;
+              top: 130px;
+              left: 85px;
+          }
+
+          .sub-light{
+              position: absolute;
+              width: 60px;
+              height: 100px;
+              background-color: #484848;
+              z-index: 2;
+              margin: 0px auto 0px auto;
+              left: 255px;
+              top: 177px;
+              padding: 10px;
+              border-radius: 15px;
+          }
+
+          .sub-holder-top{
+              position: absolute;
+              z-index: -1;
+              width: 50px;
+              height: 20px;
+              background-color: #303030;
+              top: 195px;
+              left: 215px;
+          }
+
+          .sub-holder-bottom{
+              position: absolute;
+              z-index: -1;
+              width: 50px;
+              height: 20px;
+              background-color: #303030;
+              top: 265px;
+              left: 215px;
+          }
+
+          .pole{
+              margin: 0px auto 0px auto;
+              width: 30px;
+              height: 500px;
+              background-color: #333333;
+          }
+
+          .bpole{
+              margin: 0px auto 0px auto;
+              width: 60px;
+              height: 30px;
+              background-color: #282828;
+          }
+
+          .lamp{
+              border-radius: 100%;
+              width: 80;
+              height: 80;
+              padding: 45px;
+              margin: 5px;
+          }
+
+          #human{
+              margin: 0 auto 0 auto;
+          }
+
+          /* Dim Color */
+          /* Warna Redup */
+          .lamp.red{
+              background-color: #331111;
+          }
+
+          .lamp.yellow{
+              background-color: #222211;
+          }
+
+          .lamp.green{
+              background-color: #113311;
+          }
+
+        </style>
+
+    </head>
+
+    <body>
+        <div class="timer">
+            <div class="num" id="timer-num">0</div>
+        </div>
+        <div class="sub-light">
+            <div class="human">
+                <svg height="100" width="100">
+                    <g id="human">
+                        <circle id="human-head" r="10" cx="30" cy="30"></circle>
+                        <polyline id="human-body" points="30 30, 30 60, 40 80, 30 60, 20 80, 30 60, 30 40, 45 55, 30 40, 15 55, 30 40" style="stroke:#000000; stroke-linecap:round;
+        stroke-width:8"></polyline>
+                    </g>
+                </svg>
+            </div>
+        </div>
+        </div>
+        <div class="timer-holder-top"></div>
+        <div class="timer-holder-bottom"></div>
+        <div class="sub-holder-top"></div>
+        <div class="sub-holder-bottom"></div>
+        <div class="trafficlight">
+            <div id="red" class="lamp red"></div>
+            <div id="yellow" class="lamp yellow"></div>
+            <div id="green" class="lamp green"></div>
+        </div>
+        <div class="pole"></div>
+        <div class="bpole"></div>
+        <span>
+                <img src="{{ ur }}">
+        </span>
+
+    </body>
+
+    <script>
+      window.onload = function(){
+          var $ = function(e){
+              return document.querySelector(e);
+          }
+
+          var setSubColor = function(c){
+              $('#human-head').style.fill = c;
+              $('#human-body').style.stroke = c;
+          }
+
+          // Function To Set Color
+          // Fungsi Untuk Mengatur Warna
+          var setColor = function(e, c){
+              e.style.backgroundColor = c;
+          }
+
+          // Getting DOM objects
+          // Mendapat Objek DOM
+          var redLamp = $("#red");
+          var yelLamp = $("#yellow");
+          var greLamp = $("#green");
+          var timerNum = $("#timer-num");
+
+          // Color
+          // Warna
+          var green = "#00EE00";
+          var yellow = "#DDDD00";
+          var red = "#EE0000";
+          var gDim = "#113311";
+          var yDim = "#222211";
+          var rDim = "#331111";
+
+          var gOn = new isOn();
+          var yOn = new isOn();
+          var rOn = new isOn();
+
+          function check(n){
+              n = parseInt(n);
+              while(isNaN(n)){
+                  n = parseInt(prompt("enter a valid number!"));
+              }
+              return Math.floor(n);
+          }
+
+          // Set Timer
+          // Mengatur Timer
+           var redTimer = check( {{ alloted }} ); // Time For Red Light, Waktu Untuk Lampu Merah
+          var yelTimer = check( {{ alloted }} );// Time For Yellow Light, Waktu Untuk Lampu Kuning5
+          var greTimer = check( {{ alloted }} );// Time For Green Light, Waktu Untuk Lampu Hijau
+
+          var totalTime = greTimer + yelTimer + redTimer;
+          var timeCount = greTimer;
+
+          if(greTimer && yelTimer && redTimer){
+              var i = 1;
+              var intr = setInterval(function(){
+                  if(i <= greTimer){
+                      if(rOn.getOn()){
+                          timeCount = greTimer;
+                      }
+
+                      yOn.setOn(false);
+                      rOn.setOn(false);
+                      gOn.setOn(true);
+
+                      timerNum.innerHTML = timeCount--;
+                      setColor(yelLamp, yDim);
+                      setColor(redLamp, rDim);
+                      setColor(greLamp, green);
+                      setSubColor("red");
+                  }else if(i > greTimer && i <= greTimer + yelTimer){
+                      if(gOn.getOn()){
+                          timeCount = yelTimer;
+                      }
+
+                      gOn.setOn(false);
+                      rOn.setOn(false);
+                      yOn.setOn(true);
+
+                      timerNum.innerHTML = timeCount--;
+
+                      setColor(greLamp, gDim);
+                      setColor(redLamp, rDim);
+                      setColor(yelLamp, yellow);
+                      setSubColor("red");
+                  }else{
+                      if(yOn.getOn()){
+                          timeCount = redTimer;
+                      }
+
+                      gOn.setOn(false);
+                      yOn.setOn(false);
+                      rOn.setOn(true);
+
+                      timerNum.innerHTML = timeCount--;
+
+                      if(timeCount == redTimer-1)
+                          setSubColor("green");
+                      if(timeCount == 1)
+                          setSubColor("red");
+                      setColor(yelLamp, yDim);
+                      setColor(greLamp, gDim);
+                      setColor(redLamp, red)
+                  }
+                  i++;
+                  if(i-1 >= totalTime)
+                      i = 0;
+              }, 1000);
+          }else{
+              alert("error, don't input 0")
+          }
+
+      }
+
+      // Helper
+      var isOn = function(){
+          this.on = false;
+          this.setOn = function(b){
+              this.on = b;
+          }
+          this.getOn = function(){
+              return this.on;
+          }
+      }
+    </script>
+</html>
